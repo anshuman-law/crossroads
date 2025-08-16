@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Kahani Crossroads • Interactive Panchatantra</title>
+  <meta name="theme-color" content="#0d1020" />
+  <style>
+    :root{
+      --bg:#0d1020; --panel:#131735; --ink:#eef0fb; --muted:#a6afd3; --accent:#ffcd6b; --accent2:#7ee0d6; --good:#83f3a4; --warn:#ffd166; --bad:#ff8aa3;
+      --ring:rgba(255,205,107,.32);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:radial-gradient(900px 500px at 80% -10%, #1a2150 0, transparent 60%),radial-gradient(900px 600px at -10% 110%, #0f1537 0, transparent 60%),var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial}
+    a{color:var(--accent)}
+
+    .app{min-height:100dvh;display:grid;grid-template-rows:auto 1fr auto}
+    header{position:sticky;top:0;z-index:4;background:linear-gradient(180deg,rgba(0,0,0,.5),rgba(0,0,0,.05));backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.06)}
+    .bar{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px 14px}
+    .brand{display:flex;gap:10px;align-items:center}
+    .logo{width:40px;height:40px;border-radius:12px;background:conic-gradient(from 0deg,#6fe7d2,#ffd166,#6fe7d2);display:grid;place-items:center;box-shadow:0 0 0 3px rgba(255,255,255,.06)}
+    .logo svg{width:26px;height:26px;opacity:.9}
+    .title{font-weight:800;font-size:18px;letter-spacing:.2px}
+    .sub{font-size:12px;color:var(--muted)}
+    .actions{display:flex;gap:8px}
+    .btn{appearance:none;border:1px solid rgba(255,255,255,.12);background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.05));color:var(--ink);padding:10px 12px;border-radius:12px;cursor:pointer;transition:.2s ease;font-weight:700;font-size:14px}
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{border-color:var(--ring);box-shadow:0 0 0 3px var(--ring) inset}
+    .btn.ghost{background:transparent}
+    .btn.block{width:100%}
+
+    main{padding:12px}
+
+    .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+
+    /* Home */
+    #home{display:grid;gap:14px}
+    .hero{display:grid;gap:10px;text-align:center;padding:14px;border-radius:16px;background:radial-gradient(500px 320px at 20% 10%, rgba(255,205,107,.12), transparent 60%),radial-gradient(420px 260px at 80% 90%, rgba(126,224,214,.12), transparent 60%),rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06)}
+    .hero h1{margin:6px 0 2px 0;font-size:22px}
+    .hero p{margin:0;color:var(--muted)}
+    .notice{font-size:12px;color:var(--muted);opacity:.95}
+
+    .progress{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;margin-top:8px}
+    .token{aspect-ratio:1/1;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);display:grid;place-items:center;font-size:18px;opacity:.6}
+    .token.active{opacity:1;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.04));box-shadow:inset 0 0 0 2px var(--ring)}
+
+    .grid{display:grid;grid-template-columns:1fr;gap:10px}
+    @media(min-width:700px){.grid{grid-template-columns:repeat(2,1fr)}}
+
+    .story-card{display:flex;gap:10px;align-items:center}
+    .icon{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.15)}
+    .story-card h3{margin:0;font-size:16px}
+    .story-card p{margin:0;color:var(--muted);font-size:13px}
+
+    /* Player */
+    #player{display:none;gap:12px}
+    .crumbs{font-size:12px;color:var(--muted);margin-bottom:6px}
+    .panel{display:grid;gap:10px}
+    .art{border-radius:14px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.08);background:radial-gradient(160px 120px at 20% 25%, rgba(255,205,107,.2), transparent 70%),radial-gradient(200px 160px at 80% 80%, rgba(126,224,214,.2), transparent 70%),linear-gradient(145deg, rgba(255,255,255,.04), rgba(0,0,0,.04));min-height:160px;display:grid;place-items:center}
+    .art svg{opacity:.9}
+    .fade{animation:fade .5s ease both}
+    @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+    .choices{display:grid;gap:8px}
+    .choice{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);cursor:pointer}
+    .choice:active{transform:translateY(1px)}
+
+    .moral{font-weight:700;color:var(--accent)}
+    .meta{font-size:12px;color:var(--muted)}
+
+    .reflect{display:grid;gap:8px}
+    textarea{width:100%;min-height:110px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#0f1226;color:var(--ink);padding:10px 12px;resize:vertical}
+
+    footer{padding:12px;color:var(--muted);font-size:12px;text-align:center}
+
+    .hide{display:none}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="bar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">
+            <svg viewBox="0 0 100 100" fill="none" stroke="#fff" stroke-width="1.2"><circle cx="50" cy="50" r="30" opacity=".35"/><path d="M50 18 58 40 82 40 62 54 70 78 50 62 30 78 38 54 18 40 42 40Z" fill="rgba(255,255,255,.08)"/></svg>
+          </div>
+          <div>
+            <div class="title">Kahani Crossroads</div>
+            <div class="sub">Interactive choices from the Panchatantra</div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn" id="homeBtn" title="Home">Home</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- HOME VIEW -->
+      <section id="home" class="fade">
+        <div class="hero card">
+          <h1>Choose a tale. Face a choice.</h1>
+          <p>Walk a path, then meet the Panchatantra’s ending. This experience adapts traditional stories for reflection and learning.</p>
+          <p class="notice">Based on Panchatantra tales. Canonical morals are paraphrased; alternate endings are creative variations to prompt thinking.</p>
+          <div class="progress" id="progressGrid"></div>
+        </div>
+        <div class="grid" id="storyGrid"></div>
+      </section>
+
+      <!-- PLAYER VIEW -->
+      <section id="player" class="fade">
+        <div class="crumbs" id="crumbs">Home • Tale</div>
+        <div class="panel card">
+          <div class="art" id="artbox" aria-hidden="true">
+            <svg viewBox="0 0 300 120" width="92%" height="auto">
+              <defs>
+                <linearGradient id="g" x1="0" x2="1">
+                  <stop offset="0%" stop-color="#ffcd6b" stop-opacity=".5"/>
+                  <stop offset="100%" stop-color="#7ee0d6" stop-opacity=".5"/>
+                </linearGradient>
+              </defs>
+              <path d="M0 100 Q50 10 120 80 T300 90 V120 H0 Z" fill="url(#g)"/>
+              <circle cx="240" cy="26" r="10" fill="#ffd166"/>
+              <circle cx="248" cy="30" r="1.8" fill="#fff"/>
+            </svg>
+          </div>
+          <h2 id="storyTitle">Story</h2>
+          <p class="meta" id="storyTags"></p>
+          <p id="storyIntro"></p>
+
+          <div id="choiceBox" class="choices"></div>
+
+          <div id="yourPath" class="hide">
+            <h3>Your path</h3>
+            <p id="yourOutcome"></p>
+          </div>
+
+          <div id="panchPath" class="hide">
+            <h3>Panchatantra’s path</h3>
+            <p id="panchOutcome"></p>
+            <p class="moral" id="moral"></p>
+          </div>
+
+          <div id="reflectBox" class="reflect hide">
+            <label for="note">Your reflection</label>
+            <textarea id="note" placeholder="What value did your choice express?"></textarea>
+            <button class="btn block" id="saveNote">Save reflection</button>
+            <div class="meta" id="noteStatus"></div>
+          </div>
+
+          <button class="btn block" id="nextBtn">Next</button>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      Kahani Crossroads. Inspired by the Panchatantra.
+    </footer>
+  </div>
+
+  <script>
+    // Expanded tale set with richer descriptions
+    const TALES = [
+      {
+        id:'lion-hare',
+        title:'The Lion and the Clever Hare',
+        tags:['wit over force','prudence'],
+        intro:'In a forest ruled by fear, a lion demanded a daily tribute of flesh. When the turn fell to a small hare, he walked slowly through dust and thorn, thinking. At a moss-ringed well, he saw his plan. Arriving late, he bowed and told the lion that another rival lion had waylaid him and mocked his majesty. Pride flared like fire.',
+        decision:{
+          prompt:'How should the hare counter a tyrant who only understands his own reflection?',
+          options:[
+            {id:'A',label:'Appeal to reason and justice', outcome:'The hare speaks of fairness and balance. The lion hears only hunger and lashes the air. The pact collapses and the weak scatter, unprotected.', value:['courage']},
+            {id:'B',label:'Use the well of mirrors', outcome:'The hare guides the lion to the well. Seeing his own snarl in the water, the lion leaps to strike. The well swallows rage. The forest exhales.', value:['prudence','cunning']}
+          ]
+        },
+        canonical:'The hare survives by turning the lion’s vanity against itself at the well, ending the terror.',
+        moral:'Intelligence can channel danger into its own end.',
+        reflect:'When is guile the only language power understands?'
+      },
+      {
+        id:'talkative-tortoise',
+        title:'The Talkative Tortoise',
+        tags:['self-control','speech'],
+        intro:'By a shrinking pond, two geese offered a tortoise a passage to distant waters. Bite this stick, they said, and do not speak. As they rose over fields and temple spires, people below clapped and jeered. Words itched on the tortoise’s tongue like thorns.',
+        decision:{
+          prompt:'Mid-flight, taunts rise from the village. What should the tortoise do?',
+          options:[
+            {id:'A',label:'Answer the mockers', outcome:'He opens his mouth to correct them, and the wind seizes him. Pride travels faster than wisdom. He crashes back to the very dust he wished to leave.', value:['impulse']},
+            {id:'B',label:'Hold silence like a rope', outcome:'He swallows his reply and feels the grip of wood and trust. The geese bear him to a broad, cool lake where no one knows his name.', value:['restraint']}
+          ]
+        },
+        canonical:'He speaks, falls from the sky, and learns too late that silence can be shelter.',
+        moral:'Guard your tongue, especially when heights tempt you.',
+        reflect:'Where does speech liberate, and where does it undo?'
+      },
+      {
+        id:'blue-jackal',
+        title:'The Blue Jackal',
+        tags:['deception','leadership'],
+        intro:'A jackal tumbled into a dyer’s vat during a storm and emerged blue as twilight. Creatures of the scrub gathered in awe. He crowned himself king, assigning roles and punishments, draping fear like a robe. But rain remembers.',
+        decision:{
+          prompt:'As the color fades, what should the jackal do to keep a kingdom?',
+          options:[
+            {id:'A',label:'Confess and change rule to counsel', outcome:'He admits the accident, invites a council of birds and beasts, and trades awe for respect. Not all forgive, but many stay.', value:['honesty']},
+            {id:'B',label:'Increase terror and ritual', outcome:'He bans howling, multiplies spies, and punishes doubt. The first true rain strips his coat and his throne in one night.', value:['hubris']}
+          ]
+        },
+        canonical:'When he forgets himself and howls with his old pack, the ruse breaks and the court turns.',
+        moral:'Borrowed color peels. Character decides duration of rule.',
+        reflect:'Is fear ever a stable foundation for leadership?'
+      },
+      {
+        id:'jackal-drum',
+        title:'The Jackal and the Drum',
+        tags:['fear','inference'],
+        intro:'Hunger pulled at a jackal’s ribs when a booming rolled through the sal trees. Shadows leapt like giants. He nearly fled, then noticed how the wind rose and fell and how the sound followed the gusts like a kite.',
+        decision:{
+          prompt:'How should the jackal approach the unknown thunder?',
+          options:[
+            {id:'A',label:'Sprint away from danger', outcome:'He runs and loses the daylight. Hunger barks at his heels until it becomes the only voice he hears.', value:['avoidance']},
+            {id:'B',label:'Circle close and observe', outcome:'He pads around and finds a hollow drum tied beneath a tree, knocking against bark. Not far away lies a camp’s scraps. Supper begins with curiosity.', value:['inquiry']}
+          ]
+        },
+        canonical:'He investigates and discovers only a drum, then finds food nearby.',
+        moral:'Examine echoes before you fear them.',
+        reflect:'What signal today deserves a second look?'
+      },
+      {
+        id:'heron-crab',
+        title:'The Heron and the Crab',
+        tags:['deceit','vigilance'],
+        intro:'A pond shrank to a mirror. A white heron offered salvation, ferrying fish to a distant lake. Bones gleamed on a flat rock beyond the reeds. A crab, last of the pond, climbed onto the heron’s back and watched the path of wings.',
+        decision:{
+          prompt:'Mid-air, the crab spots the rock of bones. What should he do?',
+          options:[
+            {id:'A',label:'Trust the promise', outcome:'He relaxes and closes his eyes to dream of deep water. The dream ends on stone under a hungry beak.', value:['naivety']},
+            {id:'B',label:'Seize the neck and demand the lake', outcome:'He clamps with all his strength. The heron’s lies end in silence and the crab returns the last fish to safety.', value:['prudence']}
+          ]
+        },
+        canonical:'The crab strangles the deceiver and ends the slaughter.',
+        moral:'Test sweet offers that enrich the offerer most.',
+        reflect:'How do you verify a savior in a drought?'
+      },
+      {
+        id:'crows-snake',
+        title:'The Crows and the Snake',
+        tags:['strategy','indirect action'],
+        intro:'Season after season a black snake swallowed the chicks of a crow couple. The tree felt like a house with a thief living under the bed. The crows sought counsel beyond their own claws.',
+        decision:{
+          prompt:'Which plan defeats a foe you cannot beat head-on?',
+          options:[
+            {id:'A',label:'Battle at the burrow', outcome:'They dive and peck and are met by fangs. Grief returns with the next clutch of eggs.', value:['bravery']},
+            {id:'B',label:'Borrow human strength', outcome:'They steal a gold necklace from a bather and drop it by the snake’s hole. People arrive with sticks to reclaim it. The burrow falls silent.', value:['guile','leverage']}
+          ]
+        },
+        canonical:'They enlist humans with bait and the snake is killed.',
+        moral:'When your hands are small, use a larger lever.',
+        reflect:'Where can alliance outdo struggle?'
+      },
+      {
+        id:'brahmin-goat',
+        title:'The Brahmin and the Three Crooks',
+        tags:['social proof','discernment'],
+        intro:'Along the road a Brahmin carried a bleating goat for a ritual. Three rogues, in turn, greeted him with pity. Why carry a dog on your shoulders, holy sir? The first he waved away. The second cracked his certainty. The third planted a forest of doubt.',
+        decision:{
+          prompt:'What should he do when repeated lies feel like truth?',
+          options:[
+            {id:'A',label:'Trust the crowd over the senses', outcome:'Shame reddens his face. He drops the goat and hurries on, lighter in body and poorer in mind.', value:['conformity']},
+            {id:'B',label:'Verify with direct sight', outcome:'He stops, calms his breath, and inspects the animal. A goat it is. The rogues’ smirks fade into the dust.', value:['independence']}
+          ]
+        },
+        canonical:'He yields to social pressure and is tricked out of the goat.',
+        moral:'A chorus of lies can drown a single eye.',
+        reflect:'What is your test when voices disagree?'
+      },
+      {
+        id:'doves-net',
+        title:'The Doves and the Hunter’s Net',
+        tags:['cooperation','coordination'],
+        intro:'Grain glittered like stars on the ground. A flock descended and the world snapped shut in threads. Panic fluttered from beak to beak. Their leader, the Raja-dove, kept his eyes like still water.',
+        decision:{
+          prompt:'How can the trapped become free?',
+          options:[
+            {id:'A',label:'Each fight alone', outcome:'Threads bite deeper when wings beat without rhythm. Dust rises. So does despair.', value:['individualism']},
+            {id:'B',label:'Lift together on a count', outcome:'At three, they rise as one body, bearing the net to a mouse friend who gnaws them free. Feathers smooth. Hearts steady.', value:['teamwork']}
+          ]
+        },
+        canonical:'They coordinate, fly with the net, and win freedom with a friend’s teeth.',
+        moral:'Coordination multiplies small strengths.',
+        reflect:'Where do you need a shared count today?'
+      },
+      {
+        id:'merchant-iron',
+        title:'The Merchant and the Iron Balance',
+        tags:['reciprocity','justice'],
+        intro:'A traveling merchant stored a heavy iron balance with a friend. Years later he returned. Mice ate it, the friend lied, smiling. The merchant’s eyes did not blink. Justice sometimes walks in a circle before it speaks.',
+        decision:{
+          prompt:'What lesson fits a lie dressed as fate?',
+          options:[
+            {id:'A',label:'Argue and appeal to virtue', outcome:'Words bounce off a comfortable lie and fall to the floor.', value:['idealism']},
+            {id:'B',label:'Teach by mirror', outcome:'He hosts the friend’s son and “loses” him to a hawk. When accused, he bows. In a town where mice eat iron, hawks may carry boys. The iron returns. So does the boy.', value:['tit-for-tat']}
+          ]
+        },
+        canonical:'He mirrors the deceit to reveal it, recovering the iron and returning the child.',
+        moral:'Sometimes a riddle cures a riddle.',
+        reflect:'When does proportional response clarify rather than inflame?'
+      },
+      {
+        id:'four-friends',
+        title:'The Crow, the Mouse, the Deer, and the Turtle',
+        tags:['friendship','mutual aid'],
+        intro:'A banyan tree hosted an unlikely council: a crow on a high limb, a mouse in roots, a deer visiting at dusk, and a slow, wise turtle. When the deer was trapped in a hunter’s net, the circle tightened like a fist, then opened into a plan.',
+        decision:{
+          prompt:'What rescue honors each friend’s gift?',
+          options:[
+            {id:'A',label:'Each rushes alone', outcome:'The crow caws, the mouse darts the wrong way, the turtle lumbers and risks capture. Good hearts, bad harmony.', value:['pride']},
+            {id:'B',label:'Combine distinct talents', outcome:'The crow scouts the path, the mouse gnaws the knots, the deer feigns escape to draw the hunter aside, and the turtle brings patience at the end. Friendship holds.', value:['coordination']}
+          ]
+        },
+        canonical:'Together they save one another in turn and live by shared design.',
+        moral:'Diversity becomes power when roles fit.',
+        reflect:'Which friend’s strength completes yours?'
+      },
+      {
+        id:'monkey-wedge',
+        title:'The Monkey and the Wedge',
+        tags:['attention','hazard'],
+        intro:'In a clearing, carpenters split logs with wedges. A monkey, bright-eyed with imitation, sat where no craftsman would sit and tugged where no craft allows. Some lessons announce themselves only once.',
+        decision:{
+          prompt:'Curiosity grows. What should the monkey do?',
+          options:[
+            {id:'A',label:'Pull the wedge and see', outcome:'The log snaps shut like a jaw. Imitation without insight bites hardest.', value:['recklessness']},
+            {id:'B',label:'Observe the rhythm of work', outcome:'He watches hands, hears warnings, and learns the boundary between wonder and wound.', value:['prudence']}
+          ]
+        },
+        canonical:'He pulls the wedge and is badly hurt.',
+        moral:'Not every action is for every hand.',
+        reflect:'Where do you need apprenticeship before action?'
+      },
+      {
+        id:'lion-ox',
+        title:'The Lion and the Ox',
+        tags:['politics','intrigue'],
+        intro:'An ox named Sanjivaka recovered by a riverside and grew strong. A lion befriended him, and the court changed. Jackal ministers, feeling their influence shrink, brewed whispers as carefully as poison.',
+        decision:{
+          prompt:'How should a ruler treat whispers about a friend?',
+          options:[
+            {id:'A',label:'Strike before being struck', outcome:'The lion, stung by tales, kills his friend and inherits a throne colder than before.', value:['paranoia']},
+            {id:'B',label:'Investigate and reconcile', outcome:'He questions, listens, and sees the jackals’ fear of losing power. He keeps the friend and subdues the flatterers.', value:['justice']}
+          ]
+        },
+        canonical:'The lion is misled and kills the ox, lamenting wisdom too late.',
+        moral:'A ruler’s ear is a gate. Guard it.',
+        reflect:'What is your method for testing counsel?'
+      },
+      {
+        id:'monkey-crocodile',
+        title:'The Monkey and the Crocodile',
+        tags:['presence of mind','trust'],
+        intro:'A river fig tree fed a lone monkey with sweet fruit. A crocodile, charmed by gifts of figs, invited the monkey to visit his home. In midstream the water slowed, and the truth surfaced like a shadow: my wife wants your heart, friend.',
+        decision:{
+          prompt:'How should the monkey respond on the crocodile’s back?',
+          options:[
+            {id:'A',label:'Panic and plead', outcome:'Fear thickens the water. The crocodile dips lower. The far bank recedes.', value:['panic']},
+            {id:'B',label:'Outwit with calm', outcome:'He laughs kindly and says his heart is kept in the tree for safety. The crocodile turns back. At the branch the monkey leaps, then offers a fruit and farewell.', value:['presence','cunning']}
+          ]
+        },
+        canonical:'He saves himself by wit and never rides that ferry again.',
+        moral:'Presence of mind is a raft.',
+        reflect:'When did calm thinking last change your fate?'
+      },
+      {
+        id:'ass-tiger-skin',
+        title:'The Ass in the Tiger Skin',
+        tags:['pretense','limits'],
+        intro:'A washerman dressed his donkey in a tiger skin to graze in fields without challenge. By dusk, villagers hid indoors. Then the donkey heard other donkeys bray and could not resist answering.',
+        decision:{
+          prompt:'What should the disguised ass do at sundown?',
+          options:[
+            {id:'A',label:'Keep silent till safe', outcome:'He moves like a shadow through sugarcane and returns home, belly full and bones intact.', value:['restraint']},
+            {id:'B',label:'Bray to the chorus', outcome:'One sound unmasks him. Sticks replace fear. A costume is not a character.', value:['vanity']}
+          ]
+        },
+        canonical:'He brays and is beaten when people see through the disguise.',
+        moral:'Voice reveals truth when colors lie.',
+        reflect:'What signal gives away your disguise?'
+      },
+      {
+        id:'mice-assembly',
+        title:'The Mice Who Would Bell the Cat',
+        tags:['planning','execution'],
+        intro:'A council of mice debated each night while the cat slept heavy on a grain sack. We need a bell, said the youngest. Tails thumped in approval. The plan sparkled like a festival lamp with no oil.',
+        decision:{
+          prompt:'What should the mice do after agreeing on the bell?',
+          options:[
+            {id:'A',label:'Celebrate the brilliant plan', outcome:'Dawn returns the cat as before. Ideas without actors are incense without flame.', value:['talk']},
+            {id:'B',label:'Assign a doer and a backup', outcome:'The smallest and swiftest are trained. A thread is knotted, risks weighed, escape paths mapped. Plans walk.', value:['execution']}
+          ]
+        },
+        canonical:'They agree but no one volunteers to bell the cat. Nothing changes.',
+        moral:'A plan without a hand is only air.',
+        reflect:'Who is your designated doer?'
+      },
+      {
+        id:'brahmin-pot',
+        title:'The Dreaming Brahmin and the Pot of Grain',
+        tags:['attention','projection'],
+        intro:'A Brahmin stored a small pot of grain and lay beside it, weaving futures. I will sell the grain, buy goats, then cattle, then a house. When beggars come, I will kick them away thus. His foot demonstrated on the pot.',
+        decision:{
+          prompt:'What practice prevents castles from being built on air?',
+          options:[
+            {id:'A',label:'Live in the future', outcome:'The pot breaks, grain spills, and the future dissolves like sugar in rain.', value:['fantasy']},
+            {id:'B',label:'Return to the next right act', outcome:'He notes the dream, smiles, and goes to grind more grain. Futures grow from present mills.', value:['mindfulness']}
+          ]
+        },
+        canonical:'He kicks the pot in his reverie and loses even the grain he had.',
+        moral:'Attention is the first capital.',
+        reflect:'What simple work right now builds the future cleanly?'
+      },
+      {
+        id:'crow-pitcher',
+        title:'The Thirsty Crow and the Pitcher',
+        tags:['experimentation','patience'],
+        intro:'Under noon heat a crow found a pitcher with water beyond the reach of beak. Wings drooped. Then the crow saw pebbles sleeping in dust and remembered that height has more than one meaning.',
+        decision:{
+          prompt:'How should the crow drink?',
+          options:[
+            {id:'A',label:'Tip the pitcher by force', outcome:'It is heavy and does not move. Strength drains faster than water rises.', value:['haste']},
+            {id:'B',label:'Drop pebbles one by one', outcome:'The water climbs a staircase of stones. Beak meets mirror. Thirst ends.', value:['iteration']}
+          ]
+        },
+        canonical:'By dropping stones the crow raises the water and drinks.',
+        moral:'Small repeated acts solve tall problems.',
+        reflect:'What is your next pebble?'
+      },
+      {
+        id:'crow-owl',
+        title:'The Crows and the Owl',
+        tags:['diplomacy','security'],
+        intro:'War simmered between crows and owls. A crow feigned exile and offered himself as a defector to the owl king. In the caves he learned their paths and watches. Night can be mapped.',
+        decision:{
+          prompt:'What should the crow do after winning the owl king’s trust?',
+          options:[
+            {id:'A',label:'Remain loyal to the ruse forever', outcome:'He forgets the reason for the mask and becomes what he pretended to be.', value:['drift']},
+            {id:'B',label:'Signal his kin and strike at dawn', outcome:'He lights the dry brush at cave mouths. When owls return, smoke bars entry and the crows reclaim the skies.', value:['strategy']}
+          ]
+        },
+        canonical:'The crow spy enables his people to defeat the owls.',
+        moral:'Patience inside danger can redraw maps.',
+        reflect:'What guardrails keep strategy from corroding character?'
+      }
+    ];
+
+    // Local storage helpers
+    const store = {
+      get:k=>JSON.parse(localStorage.getItem(k)||'null'),
+      set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))
+    };
+
+    const progress = store.get('kc_progress') || {tokens:{}, notes:{}};
+
+    const $ = s=>document.querySelector(s);
+    const $$ = s=>Array.from(document.querySelectorAll(s));
+
+    // Build home
+    function buildHome(){
+      const grid = $('#storyGrid');
+      grid.innerHTML = '';
+      TALES.forEach((t,i)=>{
+        const card = document.createElement('button');
+        card.className = 'card story-card btn ghost';
+        card.innerHTML = `
+          <div class="icon">${iconFor(i)}</div>
+          <div>
+            <h3>${t.title}</h3>
+            <p>${t.tags.join(' • ')}</p>
+          </div>`;
+        card.addEventListener('click',()=>openTale(t.id));
+        grid.appendChild(card);
+      });
+
+      const pg = $('#progressGrid');
+      pg.innerHTML = '';
+      const count = Math.max(10, TALES.length);
+      for(let i=0;i<10;i++){
+        const token = document.createElement('div');
+        const taleId = TALES[i]?.id;
+        token.className = 'token'+(taleId && progress.tokens[taleId] ? ' active':'');
+        token.textContent = taleId && progress.tokens[taleId] ? '★' : '☆';
+        pg.appendChild(token);
+      }
+    }
+
+    function iconFor(i){
+      const icons = ['🦁','🐢','🦬','🪘','🦢','🐍','🐐','🕊️','⚖️','🦌','🐒','🐂','🐭','🦜','🦉'];
+      return `<span style="font-size:22px">${icons[i%icons.length]}</span>`;
+    }
+
+    // Player state
+    let current = null; // tale object
+    let stage = 'intro'; // intro -> choice -> your -> panch -> reflect
+    let chosen = null;
+
+    function openTale(id){
+      current = TALES.find(x=>x.id===id);
+      stage = 'intro';
+      chosen = null;
+      $('#home').style.display='none';
+      $('#player').style.display='grid';
+      $('#crumbs').textContent = `Home • ${current.title}`;
+      renderStage();
+    }
+
+    $('#homeBtn').addEventListener('click',()=>{
+      $('#player').style.display='none';
+      $('#home').style.display='grid';
+      buildHome();
+    });
+
+    function renderStage(){
+      $('#storyTitle').textContent = current.title;
+      $('#storyTags').textContent = current.tags.join(' • ');
+      const next = $('#nextBtn');
+      const choiceBox = $('#choiceBox');
+      const your = $('#yourPath');
+      const panch = $('#panchPath');
+      const refl = $('#reflectBox');
+
+      if(stage==='intro'){
+        $('#storyIntro').textContent = current.intro;
+        choiceBox.innerHTML = '';
+        your.classList.add('hide');
+        panch.classList.add('hide');
+        refl.classList.add('hide');
+        next.textContent = 'Continue';
+        next.onclick = ()=>{ stage='choice'; renderStage(); }
+      }
+      else if(stage==='choice'){
+        $('#storyIntro').textContent = current.decision.prompt;
+        choiceBox.innerHTML = '';
+        current.decision.options.forEach(op=>{
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.innerHTML = `<div class="icon">👉</div><div><div><strong>${op.label}</strong></div><div class="meta">${op.value.join(' • ')}</div></div>`;
+          btn.addEventListener('click',()=>{
+            chosen = op;
+            stage='your';
+            renderStage();
+          });
+          choiceBox.appendChild(btn);
+        });
+        your.classList.add('hide');
+        panch.classList.add('hide');
+        refl.classList.add('hide');
+        next.textContent = 'Pick a path';
+        next.onclick = ()=>{};
+      }
+      else if(stage==='your'){
+        choiceBox.innerHTML = '';
+        $('#storyIntro').textContent = 'You chose:';
+        your.classList.remove('hide');
+        $('#yourOutcome').textContent = chosen.outcome;
+        panch.classList.add('hide');
+        refl.classList.add('hide');
+        next.textContent = "See Panchatantra's ending";
+        next.onclick = ()=>{ stage='panch'; renderStage(); };
+      }
+      else if(stage==='panch'){
+        $('#storyIntro').textContent = '';
+        your.classList.remove('hide');
+        panch.classList.remove('hide');
+        $('#panchOutcome').textContent = current.canonical;
+        $('#moral').textContent = current.moral;
+        refl.classList.add('hide');
+        next.textContent = 'Reflect';
+        next.onclick = ()=>{ stage='reflect'; renderStage(); };
+      }
+      else if(stage==='reflect'){
+        your.classList.remove('hide');
+        panch.classList.remove('hide');
+        refl.classList.remove('hide');
+        $('#note').value = (store.get('kc_progress')?.notes?.[current.id])||'';
+        $('#noteStatus').textContent = current.reflect;
+        next.textContent = 'Finish';
+        next.onclick = ()=>finishTale();
+      }
+    }
+
+    $('#saveNote').addEventListener('click',()=>{
+      const notes = (store.get('kc_progress')||{tokens:{},notes:{}}).notes || {};
+      notes[current.id] = $('#note').value.trim();
+      progress.notes = notes;
+      store.set('kc_progress', progress);
+      $('#noteStatus').textContent = 'Saved';
+      setTimeout(()=>$('#noteStatus').textContent=current.reflect,1200);
+    });
+
+    function finishTale(){
+      progress.tokens[current.id] = true;
+      store.set('kc_progress', progress);
+      $('#player').style.display='none';
+      $('#home').style.display='grid';
+      buildHome();
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    // init
+    buildHome();
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Kahani Crossroads • Interactive Panchatantra</title>
+  <meta name="theme-color" content="#0d1020" />
+  <style>
+    :root{
+      --bg:#0d1020; --panel:#131735; --ink:#eef0fb; --muted:#a6afd3; --accent:#ffcd6b; --accent2:#7ee0d6; --good:#83f3a4; --warn:#ffd166; --bad:#ff8aa3;
+      --ring:rgba(255,205,107,.32);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:radial-gradient(900px 500px at 80% -10%, #1a2150 0, transparent 60%),radial-gradient(900px 600px at -10% 110%, #0f1537 0, transparent 60%),var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial}
+    a{color:var(--accent)}
+
+    .app{min-height:100dvh;display:grid;grid-template-rows:auto 1fr auto}
+    header{position:sticky;top:0;z-index:4;background:linear-gradient(180deg,rgba(0,0,0,.5),rgba(0,0,0,.05));backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.06)}
+    .bar{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px 14px}
+    .brand{display:flex;gap:10px;align-items:center}
+    .logo{width:40px;height:40px;border-radius:12px;background:conic-gradient(from 0deg,#6fe7d2,#ffd166,#6fe7d2);display:grid;place-items:center;box-shadow:0 0 0 3px rgba(255,255,255,.06)}
+    .logo svg{width:26px;height:26px;opacity:.9}
+    .title{font-weight:800;font-size:18px;letter-spacing:.2px}
+    .sub{font-size:12px;color:var(--muted)}
+    .actions{display:flex;gap:8px}
+    .btn{appearance:none;border:1px solid rgba(255,255,255,.12);background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.05));color:var(--ink);padding:10px 12px;border-radius:12px;cursor:pointer;transition:.2s ease;font-weight:700;font-size:14px}
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{border-color:var(--ring);box-shadow:0 0 0 3px var(--ring) inset}
+    .btn.ghost{background:transparent}
+    .btn.block{width:100%}
+
+    main{padding:12px}
+
+    .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+
+    /* Home */
+    #home{display:grid;gap:14px}
+    .hero{display:grid;gap:10px;text-align:center;padding:14px;border-radius:16px;background:radial-gradient(500px 320px at 20% 10%, rgba(255,205,107,.12), transparent 60%),radial-gradient(420px 260px at 80% 90%, rgba(126,224,214,.12), transparent 60%),rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06)}
+    .hero h1{margin:6px 0 2px 0;font-size:22px}
+    .hero p{margin:0;color:var(--muted)}
+    .notice{font-size:12px;color:var(--muted);opacity:.95}
+
+    .progress{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;margin-top:8px}
+    .token{aspect-ratio:1/1;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);display:grid;place-items:center;font-size:18px;opacity:.6}
+    .token.active{opacity:1;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.04));box-shadow:inset 0 0 0 2px var(--ring)}
+
+    .grid{display:grid;grid-template-columns:1fr;gap:10px}
+    @media(min-width:700px){.grid{grid-template-columns:repeat(2,1fr)}}
+
+    .story-card{display:flex;gap:10px;align-items:center}
+    .icon{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.15)}
+    .story-card h3{margin:0;font-size:16px}
+    .story-card p{margin:0;color:var(--muted);font-size:13px}
+
+    /* Player */
+    #player{display:none;gap:12px}
+    .crumbs{font-size:12px;color:var(--muted);margin-bottom:6px}
+    .panel{display:grid;gap:10px}
+    .art{border-radius:14px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.08);background:radial-gradient(160px 120px at 20% 25%, rgba(255,205,107,.2), transparent 70%),radial-gradient(200px 160px at 80% 80%, rgba(126,224,214,.2), transparent 70%),linear-gradient(145deg, rgba(255,255,255,.04), rgba(0,0,0,.04));min-height:160px;display:grid;place-items:center}
+    .art svg{opacity:.9}
+    .fade{animation:fade .5s ease both}
+    @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+    .choices{display:grid;gap:8px}
+    .choice{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);cursor:pointer}
+    .choice:active{transform:translateY(1px)}
+
+    .moral{font-weight:700;color:var(--accent)}
+    .meta{font-size:12px;color:var(--muted)}
+
+    .reflect{display:grid;gap:8px}
+    textarea{width:100%;min-height:110px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#0f1226;color:var(--ink);padding:10px 12px;resize:vertical}
+
+    footer{padding:12px;color:var(--muted);font-size:12px;text-align:center}
+
+    .hide{display:none}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="bar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">
+            <svg viewBox="0 0 100 100" fill="none" stroke="#fff" stroke-width="1.2"><circle cx="50" cy="50" r="30" opacity=".35"/><path d="M50 18 58 40 82 40 62 54 70 78 50 62 30 78 38 54 18 40 42 40Z" fill="rgba(255,255,255,.08)"/></svg>
+          </div>
+          <div>
+            <div class="title">Kahani Crossroads</div>
+            <div class="sub">Interactive choices from the Panchatantra</div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn" id="homeBtn" title="Home">Home</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- HOME VIEW -->
+      <section id="home" class="fade">
+        <div class="hero card">
+          <h1>Choose a tale. Face a choice.</h1>
+          <p>Walk a path, then meet the Panchatantra’s ending. This experience adapts traditional stories for reflection and learning.</p>
+          <p class="notice">Based on Panchatantra tales. Canonical morals are paraphrased; alternate endings are creative variations to prompt thinking.</p>
+          <div class="progress" id="progressGrid"></div>
+        </div>
+        <div class="grid" id="storyGrid"></div>
+      </section>
+
+      <!-- PLAYER VIEW -->
+      <section id="player" class="fade">
+        <div class="crumbs" id="crumbs">Home • Tale</div>
+        <div class="panel card">
+          <div class="art" id="artbox" aria-hidden="true">
+            <svg viewBox="0 0 300 120" width="92%" height="auto">
+              <defs>
+                <linearGradient id="g" x1="0" x2="1">
+                  <stop offset="0%" stop-color="#ffcd6b" stop-opacity=".5"/>
+                  <stop offset="100%" stop-color="#7ee0d6" stop-opacity=".5"/>
+                </linearGradient>
+              </defs>
+              <path d="M0 100 Q50 10 120 80 T300 90 V120 H0 Z" fill="url(#g)"/>
+              <circle cx="240" cy="26" r="10" fill="#ffd166"/>
+              <circle cx="248" cy="30" r="1.8" fill="#fff"/>
+            </svg>
+          </div>
+          <h2 id="storyTitle">Story</h2>
+          <p class="meta" id="storyTags"></p>
+          <p id="storyIntro"></p>
+
+          <div id="choiceBox" class="choices"></div>
+
+          <div id="yourPath" class="hide">
+            <h3>Your path</h3>
+            <p id="yourOutcome"></p>
+          </div>
+
+          <div id="panchPath" class="hide">
+            <h3>Panchatantra’s path</h3>
+            <p id="panchOutcome"></p>
+            <p class="moral" id="moral"></p>
+          </div>
+
+          <div id="reflectBox" class="reflect hide">
+            <label for="note">Your reflection</label>
+            <textarea id="note" placeholder="What value did your choice express?"></textarea>
+            <button class="btn block" id="saveNote">Save reflection</button>
+            <div class="meta" id="noteStatus"></div>
+          </div>
+
+          <button class="btn block" id="nextBtn">Next</button>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      Kahani Crossroads. Inspired by the Panchatantra.
+    </footer>
+  </div>
+
+  <script>
+    // Expanded tale set with richer descriptions
+    const TALES = [
+      {
+        id:'lion-hare',
+        title:'The Lion and the Clever Hare',
+        tags:['wit over force','prudence'],
+        intro:'In a forest ruled by fear, a lion demanded a daily tribute of flesh. When the turn fell to a small hare, he walked slowly through dust and thorn, thinking. At a moss-ringed well, he saw his plan. Arriving late, he bowed and told the lion that another rival lion had waylaid him and mocked his majesty. Pride flared like fire.',
+        decision:{
+          prompt:'How should the hare counter a tyrant who only understands his own reflection?',
+          options:[
+            {id:'A',label:'Appeal to reason and justice', outcome:'The hare speaks of fairness and balance. The lion hears only hunger and lashes the air. The pact collapses and the weak scatter, unprotected.', value:['courage']},
+            {id:'B',label:'Use the well of mirrors', outcome:'The hare guides the lion to the well. Seeing his own snarl in the water, the lion leaps to strike. The well swallows rage. The forest exhales.', value:['prudence','cunning']}
+          ]
+        },
+        canonical:'The hare survives by turning the lion’s vanity against itself at the well, ending the terror.',
+        moral:'Intelligence can channel danger into its own end.',
+        reflect:'When is guile the only language power understands?'
+      },
+      {
+        id:'talkative-tortoise',
+        title:'The Talkative Tortoise',
+        tags:['self-control','speech'],
+        intro:'By a shrinking pond, two geese offered a tortoise a passage to distant waters. Bite this stick, they said, and do not speak. As they rose over fields and temple spires, people below clapped and jeered. Words itched on the tortoise’s tongue like thorns.',
+        decision:{
+          prompt:'Mid-flight, taunts rise from the village. What should the tortoise do?',
+          options:[
+            {id:'A',label:'Answer the mockers', outcome:'He opens his mouth to correct them, and the wind seizes him. Pride travels faster than wisdom. He crashes back to the very dust he wished to leave.', value:['impulse']},
+            {id:'B',label:'Hold silence like a rope', outcome:'He swallows his reply and feels the grip of wood and trust. The geese bear him to a broad, cool lake where no one knows his name.', value:['restraint']}
+          ]
+        },
+        canonical:'He speaks, falls from the sky, and learns too late that silence can be shelter.',
+        moral:'Guard your tongue, especially when heights tempt you.',
+        reflect:'Where does speech liberate, and where does it undo?'
+      },
+      {
+        id:'blue-jackal',
+        title:'The Blue Jackal',
+        tags:['deception','leadership'],
+        intro:'A jackal tumbled into a dyer’s vat during a storm and emerged blue as twilight. Creatures of the scrub gathered in awe. He crowned himself king, assigning roles and punishments, draping fear like a robe. But rain remembers.',
+        decision:{
+          prompt:'As the color fades, what should the jackal do to keep a kingdom?',
+          options:[
+            {id:'A',label:'Confess and change rule to counsel', outcome:'He admits the accident, invites a council of birds and beasts, and trades awe for respect. Not all forgive, but many stay.', value:['honesty']},
+            {id:'B',label:'Increase terror and ritual', outcome:'He bans howling, multiplies spies, and punishes doubt. The first true rain strips his coat and his throne in one night.', value:['hubris']}
+          ]
+        },
+        canonical:'When he forgets himself and howls with his old pack, the ruse breaks and the court turns.',
+        moral:'Borrowed color peels. Character decides duration of rule.',
+        reflect:'Is fear ever a stable foundation for leadership?'
+      },
+      {
+        id:'jackal-drum',
+        title:'The Jackal and the Drum',
+        tags:['fear','inference'],
+        intro:'Hunger pulled at a jackal’s ribs when a booming rolled through the sal trees. Shadows leapt like giants. He nearly fled, then noticed how the wind rose and fell and how the sound followed the gusts like a kite.',
+        decision:{
+          prompt:'How should the jackal approach the unknown thunder?',
+          options:[
+            {id:'A',label:'Sprint away from danger', outcome:'He runs and loses the daylight. Hunger barks at his heels until it becomes the only voice he hears.', value:['avoidance']},
+            {id:'B',label:'Circle close and observe', outcome:'He pads around and finds a hollow drum tied beneath a tree, knocking against bark. Not far away lies a camp’s scraps. Supper begins with curiosity.', value:['inquiry']}
+          ]
+        },
+        canonical:'He investigates and discovers only a drum, then finds food nearby.',
+        moral:'Examine echoes before you fear them.',
+        reflect:'What signal today deserves a second look?'
+      },
+      {
+        id:'heron-crab',
+        title:'The Heron and the Crab',
+        tags:['deceit','vigilance'],
+        intro:'A pond shrank to a mirror. A white heron offered salvation, ferrying fish to a distant lake. Bones gleamed on a flat rock beyond the reeds. A crab, last of the pond, climbed onto the heron’s back and watched the path of wings.',
+        decision:{
+          prompt:'Mid-air, the crab spots the rock of bones. What should he do?',
+          options:[
+            {id:'A',label:'Trust the promise', outcome:'He relaxes and closes his eyes to dream of deep water. The dream ends on stone under a hungry beak.', value:['naivety']},
+            {id:'B',label:'Seize the neck and demand the lake', outcome:'He clamps with all his strength. The heron’s lies end in silence and the crab returns the last fish to safety.', value:['prudence']}
+          ]
+        },
+        canonical:'The crab strangles the deceiver and ends the slaughter.',
+        moral:'Test sweet offers that enrich the offerer most.',
+        reflect:'How do you verify a savior in a drought?'
+      },
+      {
+        id:'crows-snake',
+        title:'The Crows and the Snake',
+        tags:['strategy','indirect action'],
+        intro:'Season after season a black snake swallowed the chicks of a crow couple. The tree felt like a house with a thief living under the bed. The crows sought counsel beyond their own claws.',
+        decision:{
+          prompt:'Which plan defeats a foe you cannot beat head-on?',
+          options:[
+            {id:'A',label:'Battle at the burrow', outcome:'They dive and peck and are met by fangs. Grief returns with the next clutch of eggs.', value:['bravery']},
+            {id:'B',label:'Borrow human strength', outcome:'They steal a gold necklace from a bather and drop it by the snake’s hole. People arrive with sticks to reclaim it. The burrow falls silent.', value:['guile','leverage']}
+          ]
+        },
+        canonical:'They enlist humans with bait and the snake is killed.',
+        moral:'When your hands are small, use a larger lever.',
+        reflect:'Where can alliance outdo struggle?'
+      },
+      {
+        id:'brahmin-goat',
+        title:'The Brahmin and the Three Crooks',
+        tags:['social proof','discernment'],
+        intro:'Along the road a Brahmin carried a bleating goat for a ritual. Three rogues, in turn, greeted him with pity. Why carry a dog on your shoulders, holy sir? The first he waved away. The second cracked his certainty. The third planted a forest of doubt.',
+        decision:{
+          prompt:'What should he do when repeated lies feel like truth?',
+          options:[
+            {id:'A',label:'Trust the crowd over the senses', outcome:'Shame reddens his face. He drops the goat and hurries on, lighter in body and poorer in mind.', value:['conformity']},
+            {id:'B',label:'Verify with direct sight', outcome:'He stops, calms his breath, and inspects the animal. A goat it is. The rogues’ smirks fade into the dust.', value:['independence']}
+          ]
+        },
+        canonical:'He yields to social pressure and is tricked out of the goat.',
+        moral:'A chorus of lies can drown a single eye.',
+        reflect:'What is your test when voices disagree?'
+      },
+      {
+        id:'doves-net',
+        title:'The Doves and the Hunter’s Net',
+        tags:['cooperation','coordination'],
+        intro:'Grain glittered like stars on the ground. A flock descended and the world snapped shut in threads. Panic fluttered from beak to beak. Their leader, the Raja-dove, kept his eyes like still water.',
+        decision:{
+          prompt:'How can the trapped become free?',
+          options:[
+            {id:'A',label:'Each fight alone', outcome:'Threads bite deeper when wings beat without rhythm. Dust rises. So does despair.', value:['individualism']},
+            {id:'B',label:'Lift together on a count', outcome:'At three, they rise as one body, bearing the net to a mouse friend who gnaws them free. Feathers smooth. Hearts steady.', value:['teamwork']}
+          ]
+        },
+        canonical:'They coordinate, fly with the net, and win freedom with a friend’s teeth.',
+        moral:'Coordination multiplies small strengths.',
+        reflect:'Where do you need a shared count today?'
+      },
+      {
+        id:'merchant-iron',
+        title:'The Merchant and the Iron Balance',
+        tags:['reciprocity','justice'],
+        intro:'A traveling merchant stored a heavy iron balance with a friend. Years later he returned. Mice ate it, the friend lied, smiling. The merchant’s eyes did not blink. Justice sometimes walks in a circle before it speaks.',
+        decision:{
+          prompt:'What lesson fits a lie dressed as fate?',
+          options:[
+            {id:'A',label:'Argue and appeal to virtue', outcome:'Words bounce off a comfortable lie and fall to the floor.', value:['idealism']},
+            {id:'B',label:'Teach by mirror', outcome:'He hosts the friend’s son and “loses” him to a hawk. When accused, he bows. In a town where mice eat iron, hawks may carry boys. The iron returns. So does the boy.', value:['tit-for-tat']}
+          ]
+        },
+        canonical:'He mirrors the deceit to reveal it, recovering the iron and returning the child.',
+        moral:'Sometimes a riddle cures a riddle.',
+        reflect:'When does proportional response clarify rather than inflame?'
+      },
+      {
+        id:'four-friends',
+        title:'The Crow, the Mouse, the Deer, and the Turtle',
+        tags:['friendship','mutual aid'],
+        intro:'A banyan tree hosted an unlikely council: a crow on a high limb, a mouse in roots, a deer visiting at dusk, and a slow, wise turtle. When the deer was trapped in a hunter’s net, the circle tightened like a fist, then opened into a plan.',
+        decision:{
+          prompt:'What rescue honors each friend’s gift?',
+          options:[
+            {id:'A',label:'Each rushes alone', outcome:'The crow caws, the mouse darts the wrong way, the turtle lumbers and risks capture. Good hearts, bad harmony.', value:['pride']},
+            {id:'B',label:'Combine distinct talents', outcome:'The crow scouts the path, the mouse gnaws the knots, the deer feigns escape to draw the hunter aside, and the turtle brings patience at the end. Friendship holds.', value:['coordination']}
+          ]
+        },
+        canonical:'Together they save one another in turn and live by shared design.',
+        moral:'Diversity becomes power when roles fit.',
+        reflect:'Which friend’s strength completes yours?'
+      },
+      {
+        id:'monkey-wedge',
+        title:'The Monkey and the Wedge',
+        tags:['attention','hazard'],
+        intro:'In a clearing, carpenters split logs with wedges. A monkey, bright-eyed with imitation, sat where no craftsman would sit and tugged where no craft allows. Some lessons announce themselves only once.',
+        decision:{
+          prompt:'Curiosity grows. What should the monkey do?',
+          options:[
+            {id:'A',label:'Pull the wedge and see', outcome:'The log snaps shut like a jaw. Imitation without insight bites hardest.', value:['recklessness']},
+            {id:'B',label:'Observe the rhythm of work', outcome:'He watches hands, hears warnings, and learns the boundary between wonder and wound.', value:['prudence']}
+          ]
+        },
+        canonical:'He pulls the wedge and is badly hurt.',
+        moral:'Not every action is for every hand.',
+        reflect:'Where do you need apprenticeship before action?'
+      },
+      {
+        id:'lion-ox',
+        title:'The Lion and the Ox',
+        tags:['politics','intrigue'],
+        intro:'An ox named Sanjivaka recovered by a riverside and grew strong. A lion befriended him, and the court changed. Jackal ministers, feeling their influence shrink, brewed whispers as carefully as poison.',
+        decision:{
+          prompt:'How should a ruler treat whispers about a friend?',
+          options:[
+            {id:'A',label:'Strike before being struck', outcome:'The lion, stung by tales, kills his friend and inherits a throne colder than before.', value:['paranoia']},
+            {id:'B',label:'Investigate and reconcile', outcome:'He questions, listens, and sees the jackals’ fear of losing power. He keeps the friend and subdues the flatterers.', value:['justice']}
+          ]
+        },
+        canonical:'The lion is misled and kills the ox, lamenting wisdom too late.',
+        moral:'A ruler’s ear is a gate. Guard it.',
+        reflect:'What is your method for testing counsel?'
+      },
+      {
+        id:'monkey-crocodile',
+        title:'The Monkey and the Crocodile',
+        tags:['presence of mind','trust'],
+        intro:'A river fig tree fed a lone monkey with sweet fruit. A crocodile, charmed by gifts of figs, invited the monkey to visit his home. In midstream the water slowed, and the truth surfaced like a shadow: my wife wants your heart, friend.',
+        decision:{
+          prompt:'How should the monkey respond on the crocodile’s back?',
+          options:[
+            {id:'A',label:'Panic and plead', outcome:'Fear thickens the water. The crocodile dips lower. The far bank recedes.', value:['panic']},
+            {id:'B',label:'Outwit with calm', outcome:'He laughs kindly and says his heart is kept in the tree for safety. The crocodile turns back. At the branch the monkey leaps, then offers a fruit and farewell.', value:['presence','cunning']}
+          ]
+        },
+        canonical:'He saves himself by wit and never rides that ferry again.',
+        moral:'Presence of mind is a raft.',
+        reflect:'When did calm thinking last change your fate?'
+      },
+      {
+        id:'ass-tiger-skin',
+        title:'The Ass in the Tiger Skin',
+        tags:['pretense','limits'],
+        intro:'A washerman dressed his donkey in a tiger skin to graze in fields without challenge. By dusk, villagers hid indoors. Then the donkey heard other donkeys bray and could not resist answering.',
+        decision:{
+          prompt:'What should the disguised ass do at sundown?',
+          options:[
+            {id:'A',label:'Keep silent till safe', outcome:'He moves like a shadow through sugarcane and returns home, belly full and bones intact.', value:['restraint']},
+            {id:'B',label:'Bray to the chorus', outcome:'One sound unmasks him. Sticks replace fear. A costume is not a character.', value:['vanity']}
+          ]
+        },
+        canonical:'He brays and is beaten when people see through the disguise.',
+        moral:'Voice reveals truth when colors lie.',
+        reflect:'What signal gives away your disguise?'
+      },
+      {
+        id:'mice-assembly',
+        title:'The Mice Who Would Bell the Cat',
+        tags:['planning','execution'],
+        intro:'A council of mice debated each night while the cat slept heavy on a grain sack. We need a bell, said the youngest. Tails thumped in approval. The plan sparkled like a festival lamp with no oil.',
+        decision:{
+          prompt:'What should the mice do after agreeing on the bell?',
+          options:[
+            {id:'A',label:'Celebrate the brilliant plan', outcome:'Dawn returns the cat as before. Ideas without actors are incense without flame.', value:['talk']},
+            {id:'B',label:'Assign a doer and a backup', outcome:'The smallest and swiftest are trained. A thread is knotted, risks weighed, escape paths mapped. Plans walk.', value:['execution']}
+          ]
+        },
+        canonical:'They agree but no one volunteers to bell the cat. Nothing changes.',
+        moral:'A plan without a hand is only air.',
+        reflect:'Who is your designated doer?'
+      },
+      {
+        id:'brahmin-pot',
+        title:'The Dreaming Brahmin and the Pot of Grain',
+        tags:['attention','projection'],
+        intro:'A Brahmin stored a small pot of grain and lay beside it, weaving futures. I will sell the grain, buy goats, then cattle, then a house. When beggars come, I will kick them away thus. His foot demonstrated on the pot.',
+        decision:{
+          prompt:'What practice prevents castles from being built on air?',
+          options:[
+            {id:'A',label:'Live in the future', outcome:'The pot breaks, grain spills, and the future dissolves like sugar in rain.', value:['fantasy']},
+            {id:'B',label:'Return to the next right act', outcome:'He notes the dream, smiles, and goes to grind more grain. Futures grow from present mills.', value:['mindfulness']}
+          ]
+        },
+        canonical:'He kicks the pot in his reverie and loses even the grain he had.',
+        moral:'Attention is the first capital.',
+        reflect:'What simple work right now builds the future cleanly?'
+      },
+      {
+        id:'crow-pitcher',
+        title:'The Thirsty Crow and the Pitcher',
+        tags:['experimentation','patience'],
+        intro:'Under noon heat a crow found a pitcher with water beyond the reach of beak. Wings drooped. Then the crow saw pebbles sleeping in dust and remembered that height has more than one meaning.',
+        decision:{
+          prompt:'How should the crow drink?',
+          options:[
+            {id:'A',label:'Tip the pitcher by force', outcome:'It is heavy and does not move. Strength drains faster than water rises.', value:['haste']},
+            {id:'B',label:'Drop pebbles one by one', outcome:'The water climbs a staircase of stones. Beak meets mirror. Thirst ends.', value:['iteration']}
+          ]
+        },
+        canonical:'By dropping stones the crow raises the water and drinks.',
+        moral:'Small repeated acts solve tall problems.',
+        reflect:'What is your next pebble?'
+      },
+      {
+        id:'crow-owl',
+        title:'The Crows and the Owl',
+        tags:['diplomacy','security'],
+        intro:'War simmered between crows and owls. A crow feigned exile and offered himself as a defector to the owl king. In the caves he learned their paths and watches. Night can be mapped.',
+        decision:{
+          prompt:'What should the crow do after winning the owl king’s trust?',
+          options:[
+            {id:'A',label:'Remain loyal to the ruse forever', outcome:'He forgets the reason for the mask and becomes what he pretended to be.', value:['drift']},
+            {id:'B',label:'Signal his kin and strike at dawn', outcome:'He lights the dry brush at cave mouths. When owls return, smoke bars entry and the crows reclaim the skies.', value:['strategy']}
+          ]
+        },
+        canonical:'The crow spy enables his people to defeat the owls.',
+        moral:'Patience inside danger can redraw maps.',
+        reflect:'What guardrails keep strategy from corroding character?'
+      }
+    ];
+
+    // Local storage helpers
+    const store = {
+      get:k=>JSON.parse(localStorage.getItem(k)||'null'),
+      set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))
+    };
+
+    const progress = store.get('kc_progress') || {tokens:{}, notes:{}};
+
+    const $ = s=>document.querySelector(s);
+    const $$ = s=>Array.from(document.querySelectorAll(s));
+
+    // Build home
+    function buildHome(){
+      const grid = $('#storyGrid');
+      grid.innerHTML = '';
+      TALES.forEach((t,i)=>{
+        const card = document.createElement('button');
+        card.className = 'card story-card btn ghost';
+        card.innerHTML = `
+          <div class="icon">${iconFor(i)}</div>
+          <div>
+            <h3>${t.title}</h3>
+            <p>${t.tags.join(' • ')}</p>
+          </div>`;
+        card.addEventListener('click',()=>openTale(t.id));
+        grid.appendChild(card);
+      });
+
+      const pg = $('#progressGrid');
+      pg.innerHTML = '';
+      const count = Math.max(10, TALES.length);
+      for(let i=0;i<10;i++){
+        const token = document.createElement('div');
+        const taleId = TALES[i]?.id;
+        token.className = 'token'+(taleId && progress.tokens[taleId] ? ' active':'');
+        token.textContent = taleId && progress.tokens[taleId] ? '★' : '☆';
+        pg.appendChild(token);
+      }
+    }
+
+    function iconFor(i){
+      const icons = ['🦁','🐢','🦬','🪘','🦢','🐍','🐐','🕊️','⚖️','🦌','🐒','🐂','🐭','🦜','🦉'];
+      return `<span style="font-size:22px">${icons[i%icons.length]}</span>`;
+    }
+
+    // Player state
+    let current = null; // tale object
+    let stage = 'intro'; // intro -> choice -> your -> panch -> reflect
+    let chosen = null;
+
+    function openTale(id){
+      current = TALES.find(x=>x.id===id);
+      stage = 'intro';
+      chosen = null;
+      $('#home').style.display='none';
+      $('#player').style.display='grid';
+      $('#crumbs').textContent = `Home • ${current.title}`;
+      renderStage();
+    }
+
+    $('#homeBtn').addEventListener('click',()=>{
+      $('#player').style.display='none';
+      $('#home').style.display='grid';
+      buildHome();
+    });
+
+    function renderStage(){
+      $('#storyTitle').textContent = current.title;
+      $('#storyTags').textContent = current.tags.join(' • ');
+      const next = $('#nextBtn');
+      const choiceBox = $('#choiceBox');
+      const your = $('#yourPath');
+      const panch = $('#panchPath');
+      const refl = $('#reflectBox');
+
+      if(stage==='intro'){
+        $('#storyIntro').textContent = current.intro;
+        choiceBox.innerHTML = '';
+        your.classList.add('hide');
+        panch.classList.add('hide');
+        refl.classList.add('hide');
+        next.textContent = 'Continue';
+        next.onclick = ()=>{ stage='choice'; renderStage(); }
+      }
+      else if(stage==='choice'){
+        $('#storyIntro').textContent = current.decision.prompt;
+        choiceBox.innerHTML = '';
+        current.decision.options.forEach(op=>{
+          const btn = document.createElement('div');
+          btn.className = 'choice';
+          btn.innerHTML = `<div class="icon">👉</div><div><div><strong>${op.label}</strong></div><div class="meta">${op.value.join(' • ')}</div></div>`;
+          btn.addEventListener('click',()=>{
+            chosen = op;
+            stage='your';
+            renderStage();
+          });
+          choiceBox.appendChild(btn);
+        });
+        your.classList.add('hide');
+        panch.classList.add('hide');
+        refl.classList.add('hide');
+        next.textContent = 'Pick a path';
+        next.onclick = ()=>{};
+      }
+      else if(stage==='your'){
+        choiceBox.innerHTML = '';
+        $('#storyIntro').textContent = 'You chose:';
+        your.classList.remove('hide');
+        $('#yourOutcome').textContent = chosen.outcome;
+        panch.classList.add('hide');
+        refl.classList.add('hide');
+        next.textContent = "See Panchatantra's ending";
+        next.onclick = ()=>{ stage='panch'; renderStage(); };
+      }
+      else if(stage==='panch'){
+        $('#storyIntro').textContent = '';
+        your.classList.remove('hide');
+        panch.classList.remove('hide');
+        $('#panchOutcome').textContent = current.canonical;
+        $('#moral').textContent = current.moral;
+        refl.classList.add('hide');
+        next.textContent = 'Reflect';
+        next.onclick = ()=>{ stage='reflect'; renderStage(); };
+      }
+      else if(stage==='reflect'){
+        your.classList.remove('hide');
+        panch.classList.remove('hide');
+        refl.classList.remove('hide');
+        $('#note').value = (store.get('kc_progress')?.notes?.[current.id])||'';
+        $('#noteStatus').textContent = current.reflect;
+        next.textContent = 'Finish';
+        next.onclick = ()=>finishTale();
+      }
+    }
+
+    $('#saveNote').addEventListener('click',()=>{
+      const notes = (store.get('kc_progress')||{tokens:{},notes:{}}).notes || {};
+      notes[current.id] = $('#note').value.trim();
+      progress.notes = notes;
+      store.set('kc_progress', progress);
+      $('#noteStatus').textContent = 'Saved';
+      setTimeout(()=>$('#noteStatus').textContent=current.reflect,1200);
+    });
+
+    function finishTale(){
+      progress.tokens[current.id] = true;
+      store.set('kc_progress', progress);
+      $('#player').style.display='none';
+      $('#home').style.display='grid';
+      buildHome();
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    // init
+    buildHome();
+  </script>
+</body>
+</html>
